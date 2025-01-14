@@ -49,10 +49,16 @@ You must create an AI binding for your Worker to connect to Workers AI. Bindings
 
 To bind Workers AI to your Worker, add the following to the end of your `wrangler.toml` file:
 
+import { WranglerConfig } from "~/components";
+
+<WranglerConfig>
+
 ```toml title="wrangler.toml"
 [ai]
 binding = "AI"
 ```
+
+</WranglerConfig>
 
 Your binding is [available in your Worker code](/workers/reference/migrate-to-module-workers/#bindings-in-es-modules-format) on [`env.AI`](/workers/runtime-apis/handlers/fetch/).
 
@@ -74,13 +80,17 @@ export interface Env {
 export default {
 	async fetch(request, env): Promise<Response> {
 		// Specify the gateway label and other options here
-		const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct-fast", {
-			prompt: "What is the origin of the phrase Hello, World",
-			gateway: {
-				id: "GATEWAYID", // Use your gateway label here
-				skipCache: true, // Optional: Skip cache if needed
+		const response = await env.AI.run(
+			"@cf/meta/llama-3.1-8b-instruct-fast",
+			{
+				prompt: "What is the origin of the phrase Hello, World",
 			},
-		});
+			{
+				gateway: {
+					id: "GATEWAYID", // Use your gateway label here
+					skipCache: true, // Optional: Skip cache if needed
+				},
+			},
 
 		// Return the AI response as a JSON object
 		return new Response(JSON.stringify(response), {

@@ -8,6 +8,8 @@ head:
     content: HTTP request body fields | Fields reference
 ---
 
+import { Type } from "~/components";
+
 :::note
 Access to HTTP request body fields requires a Cloudflare Enterprise plan with a paid add-on, except for the `http.request.body.mime` field.
 :::
@@ -16,7 +18,7 @@ The Rules language includes fields that represent properties of an HTTP request 
 
 :::caution
 
-All `http.request.body.*` fields (except `http.request.body.size`) handle a given maximum body size, which varies per plan. For Enterprise customers, the maximum body size analyzed by Cloudflare is 128 KB; for lower Cloudflare plans, the maximum size is lower. You cannot define expressions that rely on request body data beyond the maximum size set for your plan. If the request body is larger, the body fields will contain a truncated value and the `http.request.body.truncated` field will be set to `true`. The `http.request.body.size` field will contain the full size of the request without any truncation.
+All `http.request.body.*` fields (except [`http.request.body.size`](#httprequestbodysize)) handle a given maximum body size, which varies per plan. For Enterprise customers, the maximum body size analyzed by Cloudflare is 128 KB; for lower Cloudflare plans, the maximum size is lower. You cannot define expressions that rely on request body data beyond the maximum size set for your plan. If the request body is larger, the body fields will contain a truncated value and the [`http.request.body.truncated`](#httprequestbodytruncated) field will be set to `true`. The [`http.request.body.size`](#httprequestbodysize) field will contain the full size of the request without any truncation.
 
 The maximum body size applies only to the values of HTTP body fields — the origin server will still receive the complete request body.
 
@@ -26,11 +28,11 @@ The Cloudflare Rules language supports these HTTP body fields.
 
 ## `http.request.body.raw`
 
-`http.request.body.raw` `String`
+`http.request.body.raw` <Type text='String' />
 
-Represents the unaltered HTTP request body.
+The unaltered HTTP request body.
 
-When the value of `http.request.body.truncated` is true, the return value may be truncated.
+When the value of [`http.request.body.truncated`](#httprequestbodytruncated) is true, the return value may be truncated.
 
 - Decoding: no decoding performed
 - Whitespace: preserved
@@ -38,7 +40,7 @@ When the value of `http.request.body.truncated` is true, the return value may be
 
 ## `http.request.body.truncated`
 
-`http.request.body.truncated` `Boolean`
+`http.request.body.truncated` <Type text='Boolean' />
 
 Indicates whether the HTTP request body is truncated.
 
@@ -46,118 +48,121 @@ When true, `http.request.body` fields may not contain all of the HTTP request bo
 
 ## `http.request.body.size`
 
-`http.request.body.size` `Number`
+`http.request.body.size` <Type text='Number' />
 
 The total size of the HTTP request body (in bytes).
 
 :::note
-This field may have a value larger than the one returned by `len(http.request.body.raw)`, since the `http.request.body.raw` field only considers the request body up to a maximum size that varies according to your Cloudflare plan.
+This field may have a value larger than the one returned by `len(http.request.body.raw)`, since the [`http.request.body.raw`](#httprequestbodyraw) field only considers the request body up to a maximum size that varies according to your Cloudflare plan.
 :::
 
 ## `http.request.body.form`
 
-`http.request.body.form` `Map<Array<String>>`
+`http.request.body.form` <Type text='Map<Array<String>>' />
 
-Represents the HTTP request body of a form as a Map (or associative array). Populated when the Content-Type header is `application/x-www-form-urlencoded`.
+The HTTP request body of a form represented as a Map (or associative array). Populated when the `Content-Type` header is `application/x-www-form-urlencoded`.
 
 The values are not pre-processed and retain the original case used in the request.
 
 When a field repeats, then the array contains multiple items in the order they are in the request.
 
-The return value may be truncated if `http.request.body.truncated` is true.
+The return value may be truncated if [`http.request.body.truncated`](#httprequestbodytruncated) is true.
 
 - **Decoding:** no decoding performed
 - **Whitespace:** preserved
 - **Non-ASCII:** preserved
 
-Example:
-
-```txt
-any(http.request.body.form["username"][*] == "admin")
-```
-
 Example value:
-`{username": ["admin"]}`
+
+`{"username": ["admin"]}`
+
+Example usage:
+
+`any(http.request.body.form["username"][*] == "admin")`
 
 ## `http.request.body.form.names`
 
-`http.request.body.form.names` `Array<String>`
+`http.request.body.form.names` <Type text='Array<String>' />
 
-Represents the names of the form fields in an HTTP request where the content type is `application/x-www-form-urlencoded`.
+The names of the form fields in an HTTP request where the content type is `application/x-www-form-urlencoded`.
 
-The names are not pre-processed and retain the original case used in the request. They are listed in the same order as in the request.
+Names are not pre-processed and retain the original case used in the request. They are listed in the same order as in the request.
 
 Duplicate names are listed multiple times.
 
-The return value may be truncated if `http.request.body.truncated` is true.
+The return value may be truncated if [`http.request.body.truncated`](#httprequestbodytruncated) is true.
 
 - **Decoding:** no decoding performed
 - **Whitespace:** preserved
 - **Non-ASCII:** preserved
-
-Example:
-
-```txt
-any(http.request.body.form.names[*] == "username")
-```
 
 Example value:
 
 `["username"]`
 
+Example usage:
+
+`any(http.request.body.form.names[*] == "username")`
+
 ## `http.request.body.form.values`
 
-`http.request.body.form.values` `Array<String>`
+`http.request.body.form.values` <Type text='Array<String>' />
 
-Represents the values of the form fields in an HTTP request where the content type is `application/x-www-form-urlencoded`.
+The values of the form fields in an HTTP request where the content type is `application/x-www-form-urlencoded`.
 
 The values are not pre-processed and retain the original case used in the request. They are listed in the same order as in the request.
 
 Duplicated values are listed multiple times.
 
-The return value may be truncated if `http.request.body.truncated` is true.
+The return value may be truncated if [`http.request.body.truncated`](#httprequestbodytruncated) is true.
 
 - **Decoding:** no decoding performed
 - **Whitespace:** preserved
 - **Non-ASCII:** preserved
 
-Example:
-
-```txt
-any(http.request.body.form.values[*] == "admin")
-```
-
 Example value:
 
 `["admin"]`
 
+Example usage:
+
+`any(http.request.body.form.values[*] == "admin")`
+
 ## `http.request.body.mime`
 
-`http.request.body.mime` `String`
+`http.request.body.mime` <Type text='String' />
 
 The MIME type of the request detected from the request body.
 
 Supports the most common MIME types of the following general categories: video, audio, image, application, text.
 
-Example:
+Example value:
 
-`image/jpeg`
+`"image/jpeg"`
+
+Example usage:
+
+`http.request.body.mime in {"image/bmp" "image/gif" "image/jpeg" "image/png" "image/tiff"}`
 
 This field is available on all Cloudflare plans.
 
 ## `http.request.body.multipart`
 
-`http.request.body.multipart` `Map<Array<String>>`
+`http.request.body.multipart` <Type text='Map<Array<String>>' />
 
-A Map (or associative array) of multipart names to multipart values in the request body.
+A Map (or associative array) representation of multipart names to multipart values in the request body.
 
 Example value:
 
-`{"username": ["alice_doe"], "picture": [<binary_content_of_file>]}`
+`{"username": ["alice_doe"], "role": ["editor"], "picture": [<binary_content_of_file>]}`
+
+Example usage:
+
+`any(http.request.body.multipart["role"][*] == "admin")`
 
 ## `http.request.body.multipart.names`
 
-`http.request.body.multipart.names` `Array<Array<String>>`
+`http.request.body.multipart.names` <Type text='Array<Array<String>>' />
 
 List of multipart names for every part in the multipart body.
 
@@ -165,13 +170,13 @@ Example value:
 
 `[["username"], ["picture"]]`
 
-Example:
+Example usage:
 
 `any(http.request.body.multipart.names[*][0] == "picture")`
 
 ## `http.request.body.multipart.values`
 
-`http.request.body.multipart.values` `Array<String>`
+`http.request.body.multipart.values` <Type text='Array<String>' />
 
 List of multipart values for every part in the multipart body.
 
@@ -179,9 +184,13 @@ Example value:
 
 `["alice_doe", <binary_content_of_file>]`
 
+Example usage:
+
+`any(http.request.body.multipart.values[*] == "alice_doe")`
+
 ## `http.request.body.multipart.content_types`
 
-`http.request.body.multipart.content_types` `Array<Array<String>>`
+`http.request.body.multipart.content_types` <Type text='Array<Array<String>>' />
 
 List of `Content-Type` headers for each part in the multipart body.
 
@@ -189,36 +198,48 @@ Example value:
 
 `[["text/plain"], ["image/jpeg"]]`
 
-Example:
+Example usage:
 
 `any(http.request.body.multipart.content_types[*][0] == "application/octet-stream")`
 
 ## `http.request.body.multipart.content_dispositions`
 
-`http.request.body.multipart.content_dispositions` `Array<Array<String>>`
+`http.request.body.multipart.content_dispositions` <Type text='Array<Array<String>>' />
 
 List of `Content-Disposition` headers for each part in the multipart body.
 
 Example value:
 
-`[["form-data; name=\"username\"], ["form-data;name=\"picture\"]]`
+`[["form-data; name=\"username\""], ["form-data; name=\"picture\""]]`
+
+Example usage:
+
+`any(http.request.body.multipart.content_dispositions[*][0] in {"form-data; name=\"username\"" "form-data; name=\"picture\""})`
 
 ## `http.request.body.multipart.content_transfer_encodings`
 
-`http.request.body.multipart.content_transfer_encodings` `Array<Array<String>>`
+`http.request.body.multipart.content_transfer_encodings` <Type text='Array<Array<String>>' />
 
 List of `Content-Transfer-Encoding` headers for each part in the multipart body.
 
 Example value:
 
-`[["quoted-printable"], ["quoted-printable"]]`
+`[["quoted-printable"], ["base64"]]`
+
+Example usage:
+
+`any(http.request.body.multipart.content_transfer_encodings[*][0] == "binary")`
 
 ## `http.request.body.multipart.filenames`
 
-`http.request.body.multipart.filenames` `Array<Array<String>>`
+`http.request.body.multipart.filenames` <Type text='Array<Array<String>>' />
 
 List of filenames for each part in the multipart body.
 
 Example value:
 
 `[["file1.txt"], ["photo.jpg"]]`
+
+Example usage:
+
+`any(http.request.body.multipart.filenames[*][0] in {"token.txt" "password.txt"})`

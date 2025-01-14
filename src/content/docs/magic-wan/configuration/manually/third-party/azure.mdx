@@ -100,13 +100,13 @@ Choose the following settings when creating your VPN Connection:
    1. **IKE Phase 1**
       1. **Encryption**: _GCMAES256_ or _AES256_
       2. **Integrity/PRF**: _SHA256_
-      3. **DH Group**: _DHGroup14_
+      3. **DH Group**: _DHGroup20_
    2. **IKE Phase 2(IPsec)**
       1. **IPsec Encryption**: _GCMAES256_ or _AES256_
       2. **IPsec Integrity**: _SHA256_
       3. **PFS Group**: _PFS2048_
    3. **IPsec SA lifetime in KiloBytes**: `0`
-   4. **IPsec SA lifetime in seconds**: `27000`
+   4. **IPsec SA lifetime in seconds**: `28800`
    5. **Use policy based traffic selector**: **Disable**
    6. **DPD timeout in seconds**: `45`
    7. **Connection mode**: **Default**
@@ -130,7 +130,7 @@ Microsoft does not permit specifying a default route (`0.0.0.0/0`) under Address
 
 If you opt to route all Internet bound traffic through Magic WAN and want to take advantage of [HTTPS TLS decryption](/cloudflare-one/policies/gateway/http-policies/tls-decryption/), it will be necessary to install and trust the Cloudflare Zero Trust root CA certificate on your user's devices. You can either install the certificate provided by Cloudflare (default option), or generate your own custom certificate and upload it to Cloudflare.
 
-More details on how to install the root CA certificate can be found in [User-side certificates](/cloudflare-one/connections/connect-devices/warp/user-side-certificates/) in the Cloudflare Zero Trust documentation.
+More details on how to install the root CA certificate can be found in [User-side certificates](/cloudflare-one/connections/connect-devices/user-side-certificates/) in the Cloudflare Zero Trust documentation.
 
 Once the root CA certificate is installed, open a web browser or use curl to validate Internet connectivity:
 

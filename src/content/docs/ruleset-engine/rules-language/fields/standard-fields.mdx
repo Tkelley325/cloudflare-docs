@@ -8,7 +8,7 @@ head:
     content: Standard fields | Fields reference
 ---
 
-import { Details } from "~/components";
+import { Details, Render, Type } from "~/components";
 
 Most standard fields use the same naming conventions as [Wireshark display fields](https://www.wireshark.org/docs/wsug_html_chunked/ChWorkBuildDisplayFilterSection.html). However, there are some subtle differences between Cloudflare and Wireshark:
 
@@ -32,91 +32,91 @@ The Cloudflare Rules language supports these standard fields.
 
 ## `http.cookie`
 
-`http.cookie` `String`
+`http.cookie` <Type text='String' />
 
-Represents the entire cookie as a string.
+The entire cookie as a string.
 
 Example value:
 
 ```txt
-session=8521F670545D7865F79C3D7BEDC29CCE;-background=light
+"session=8521F670545D7865F79C3D7BEDC29CCE;-background=light"
 ```
 
 ## `http.host`
 
-`http.host` `String`
+`http.host` <Type text='String' />
 
-Represents the hostname used in the full request URI.
+The hostname used in the full request URI.
 
 Example value:
 
 ```txt
-www.example.org
+"www.example.org"
 ```
 
 ## `http.referer`
 
-`http.referer` `String`
+`http.referer` <Type text='String' />
 
-Represents the HTTP Referer request header, which contains the address of the web page that linked to the currently requested page.
+The HTTP `Referer` request header, which contains the address of the web page that linked to the currently requested page.
 
 Example value:
 
 ```txt
-Referer: htt­ps://developer.example.org/en-US/docs/Web/JavaScript
+"https://developer.example.org/en-US/docs/Web/JavaScript"
 ```
 
 ## `http.request.full_uri`
 
-`http.request.full_uri` `String`
+`http.request.full_uri` <Type text='String' />
 
-Represents the full URI as received by the web server (does not include `#fragment`, which is not sent to web servers).
+The full URI as received by the web server (does not include `#fragment`, which is not sent to web servers).
 
 Example value:
 
 ```txt
-htt­ps://www.example.org/articles/index?section=539061&expand=comments
+"https://www.example.org/articles/index?section=539061&expand=comments"
 ```
 
 ## `http.request.method`
 
-`http.request.method` `String`
+`http.request.method` <Type text='String' />
 
-Represents the HTTP method, returned as a string of uppercase characters.
+The HTTP method, returned as a string of uppercase characters.
 
 Example value:
 
 ```txt
-GET
+"GET"
 ```
 
 ## `http.request.cookies`
 
-`http.request.cookies` `Map<Array<String>>`
+`http.request.cookies` <Type text='Map<Array<String>>' />
 
-Represents the `Cookie` HTTP header associated with a request as a Map (associative array). The cookie values are not pre-processed and retain the original case used in the request.
+The `Cookie` HTTP header associated with a request represented as a Map (associative array). The cookie values are not pre-processed and retain the original case used in the request.
 
 **Decoding:** The cookie names are URL decoded. If two cookies have the same name after decoding, their value arrays are merged.
 
-Example:
+Example value:
+
+```txt
+{ "app": ["test"] }
+```
+
+Example usage:
 
 ```txt
 any(http.request.cookies["app"][*] == "test")
 ```
 
-Example value:
-
-```json
-{ "app": ["test"] }
-```
-
 ## `http.request.timestamp.sec`
 
-`http.request.timestamp.sec` `Integer`
+`http.request.timestamp.sec` <Type text='Integer' />
 
-Represents the timestamp when Cloudflare received the request, expressed as Unix time in seconds. This value is 10 digits long.
+The timestamp when Cloudflare received the request, expressed as UNIX time in seconds. This value is 10 digits long.
 
-To obtain the timestamp milliseconds, use the `http.request.timestamp.msec` field.
+To obtain the timestamp milliseconds, use the [`http.request.timestamp.msec`](#httprequesttimestampmsec) field.
 
 Example value:
 
@@ -124,15 +124,15 @@ Example value:
 1484063137
 ```
 
-When validating HMAC tokens in an expression, pass this field as the `currentTimestamp` argument to the [is_timed_hmac_valid_v0()](/ruleset-engine/rules-language/functions/#hmac-validation) validation function.
+When validating HMAC tokens in an expression, pass this field as the `currentTimestamp` argument to the [`is_timed_hmac_valid_v0()`](/ruleset-engine/rules-language/functions/#hmac-validation) validation function.
 
 ## `http.request.timestamp.msec`
 
-`http.request.timestamp.msec` `Integer`
+`http.request.timestamp.msec` <Type text='Integer' />
 
-Represents the millisecond when Cloudflare received the request, between 0 and 999.
+The millisecond when Cloudflare received the request, between 0 and 999.
 
-To obtain the complete timestamp, use both `http.request.timestamp.sec` and `http.request.timestamp.msec` fields.
+To obtain the complete timestamp, use both [`http.request.timestamp.sec`](#httprequesttimestampsec) and [`http.request.timestamp.msec`](#httprequesttimestampmsec) fields.
 
 Example value:
 
@@ -140,35 +140,33 @@ Example value:
 857
 ```
 
-Here is the formatted information for the provided rows:
-
 ## `http.request.uri`
 
-`http.request.uri` `String`
+`http.request.uri` <Type text='String' />
 
-Represents the URI path and query string of the request.
+The URI path and query string of the request.
 
 Example value:
 
 ```txt
-/articles/index?section=539061&expand=comments
+"/articles/index?section=539061&expand=comments"
 ```
 
 ## `http.request.uri.path`
 
-`http.request.uri.path` `String`
+`http.request.uri.path` <Type text='String' />
 
-Represents the URI path of the request.
+The URI path of the request.
 
 Example value:
 
 ```txt
-/articles/index
+"/articles/index"
 ```
 
 ## `http.request.uri.path.extension`
 
-`http.request.uri.path.extension` `String`
+`http.request.uri.path.extension` <Type text='String' />
 
 The lowercased file extension in the URI path without the dot (`.`) character. This corresponds to the string after the last dot in the URI path, excluding the query string.
 
@@ -176,7 +174,7 @@ If the first character of the last path segment is a dot and the segment does no
 
 Example values:
 
-- If the URI path is `/articles/index.html`, the field value will be `html`.
+- If the URI path is `/articles/index.html`, the field value will be `"html"`.
 - If the URI path is `/articles/index.`, the field value will be an empty string (`""`).
 
 <Details header="Example values">
@@ -195,56 +193,56 @@ Example values:
 
 ## `http.request.uri.query`
 
-`http.request.uri.query` `String`
+`http.request.uri.query` <Type text='String' />
 
-Represents the entire query string, without the `?` delimiter.
+The entire query string, without the `?` delimiter.
 
 Example value:
 
 ```txt
-section=539061&expand=comments
+"section=539061&expand=comments"
 ```
 
 ## `http.user_agent`
 
-`http.user_agent` `String`
+`http.user_agent` <Type text='String' />
 
-Represents the HTTP User-Agent request header, which contains a characteristic string to identify the client operating system and web browser.
+The HTTP `User-Agent` request header, which contains a characteristic string to identify the client operating system and web browser.
 
 Example value:
 
 ```txt
-Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36
+"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
 ```
 
 ## `http.request.version`
 
-`http.request.version` `String`
+`http.request.version` <Type text='String' />
 
-Represents the version of the HTTP protocol used. Use this field when different checks are needed for different versions.
+The version of the HTTP protocol used. Use this field when different checks are needed for different versions.
 
 Example values:
 
-- `HTTP/1.1`
-- `HTTP/3`
+- `"HTTP/1.1"`
+- `"HTTP/3"`
 
 ## `http.x_forwarded_for`
 
-`http.x_forwarded_for` `String`
+`http.x_forwarded_for` <Type text='String' />
 
-Represents the full `X-Forwarded-For` HTTP header.
+The full value of the `X-Forwarded-For` HTTP header.
 
 Example value:
 
 ```txt
-203.0.113.195, 70.41.3.18
+"203.0.113.195, 70.41.3.18"
 ```
 
 ## `ip.src`
 
-`ip.src` `IP address`
+`ip.src` <Type text='IP address' />
 
-Represents the client TCP IP address, which may be adjusted to reflect the actual address of the client using HTTP headers such as `X-Forwarded-For` or `X-Real-IP`.
+The client TCP IP address, which may be adjusted to reflect the actual address of the client using HTTP headers such as `X-Forwarded-For` or `X-Real-IP`.
 
 Example value:
 
@@ -254,135 +252,135 @@ Example value:
 
 ## `ip.src.lat`
 
-`ip.src.lat` `String`
+`ip.src.lat` <Type text='String' />
 
-Represents the latitude associated with the client IP address.
+The latitude associated with the client IP address.
 
 Example value:
 
 ```txt
-37.78044
+"37.78044"
 ```
 
 ## `ip.src.lon`
 
-`ip.src.lon` `String`
+`ip.src.lon` <Type text='String' />
 
-Represents the longitude associated with the client IP address.
+The longitude associated with the client IP address.
 
 Example value:
 
 ```txt
--122.39055
+"-122.39055"
 ```
 
 ## `ip.src.city`
 
-`ip.src.city` `String`
+`ip.src.city` <Type text='String' />
 
-Represents the city associated with the client IP address.
+The city associated with the client IP address.
 
 Example value:
 
 ```txt
-San Francisco
+"San Francisco"
 ```
 
 ## `ip.src.postal_code`
 
-`ip.src.postal_code` `String`
+`ip.src.postal_code` <Type text='String' />
 
-Represents the postal code associated with the incoming request.
+The postal code associated with the incoming request.
 
 Example value:
 
 ```txt
-78701
+"78701"
 ```
 
 ## `ip.src.metro_code`
 
-`ip.src.metro_code` `String`
+`ip.src.metro_code` <Type text='String' />
 
-Represents the metro code or Designated Market Area (DMA) code associated with the incoming request.
+The metro code or Designated Market Area (DMA) code associated with the incoming request.
 
 Example value:
 
 ```txt
-635
+"635"
 ```
 
 ## `ip.src.region`
 
-`ip.src.region` `String`
+`ip.src.region` <Type text='String' />
 
-Represents the region name associated with the incoming request.
+The region name associated with the incoming request.
 
 Example value:
 
 ```txt
-Texas
+"Texas"
 ```
 
 ## `ip.src.region_code`
 
-`ip.src.region_code` `String`
+`ip.src.region_code` <Type text='String' />
 
-Represents the region code associated with the incoming request.
+The region code associated with the incoming request.
 
 Example value:
 
 ```txt
-TX
+"TX"
 ```
 
 ## `ip.src.timezone.name`
 
-`ip.src.timezone.name` `String`
+`ip.src.timezone.name` <Type text='String' />
 
-Represents the name of the timezone associated with the incoming request. This field is only available in rewrite expressions of [Transform Rules](/rules/transform/).
+The name of the timezone associated with the incoming request. This field is only available in rewrite expressions of [Transform Rules](/rules/transform/).
 
 Example value:
 
 ```txt
-America/Chicago
+"America/Chicago"
 ```
 
 ## `ip.src.asnum`
 
-`ip.src.asnum` `Number`
+`ip.src.asnum` <Type text='Number' />
 
-Represents the 16- or 32-bit integer representing the Autonomous System (AS) number associated with the client IP address.
+The 16-bit or 32-bit integer representing the Autonomous System (AS) number associated with the client IP address.
 
 This field has the same value as the `ip.geoip.asnum` field, which is deprecated. The `ip.geoip.asnum` field is still available for new and existing rules, but you should use the `ip.src.asnum` field instead.
 
 ## `ip.src.continent`
 
-`ip.src.continent` `String`
+`ip.src.continent` <Type text='String' />
 
-Represents the continent code associated with the client IP address:
+The continent code associated with the client IP address:
 
-- **AF**: Africa
-- **AN**: Antarctica
-- **AS**: Asia
-- **EU**: Europe
-- **NA**: North America
-- **OC**: Oceania
-- **SA**: South America
-- **T1**: Tor network
+- `"AF"`: Africa
+- `"AN"`: Antarctica
+- `"AS"`: Asia
+- `"EU"`: Europe
+- `"NA"`: North America
+- `"OC"`: Oceania
+- `"SA"`: South America
+- `"T1"`: Tor network
 
 This field has the same value as the `ip.geoip.continent` field, which is deprecated. The `ip.geoip.continent` field is still available for new and existing rules, but you should use the `ip.src.continent` field instead.
 
 ## `ip.src.country`
 
-`ip.src.country` `String`
+`ip.src.country` <Type text='String' />
 
-Represents the 2-letter country code in [ISO 3166-1 Alpha 2](https://www.iso.org/obp/ui/#search/code/) format.
+The 2-letter country code in [ISO 3166-1 Alpha 2](https://www.iso.org/obp/ui/#search/code/) format.
 
 Example value:
 
 ```txt
-GB
+"GB"
 ```
 
 For more information on the ISO 3166-1 Alpha 2 format, refer to [ISO 3166-1 Alpha 2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) on Wikipedia.
@@ -391,14 +389,14 @@ This field has the same value as the `ip.geoip.country` field, which is deprecat
 
 ## `ip.src.subdivision_1_iso_code`
 
-`ip.src.subdivision_1_iso_code` `String`
+`ip.src.subdivision_1_iso_code` <Type text='String' />
 
-Represents the ISO 3166-2 code for the first-level region associated with the IP address. When the actual value is not available, this field contains an empty string.
+The ISO 3166-2 code for the first-level region associated with the IP address. When the actual value is not available, this field contains an empty string.
 
 Example value:
 
 ```txt
-GB-ENG
+"GB-ENG"
 ```
 
 For more information on the ISO 3166-2 standard and the available regions, refer to [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) on Wikipedia.
@@ -407,14 +405,14 @@ This field has the same value as the `ip.geoip.subdivision_1_iso_code` field, wh
 
 ## `ip.src.subdivision_2_iso_code`
 
-`ip.src.subdivision_2_iso_code` `String`
+`ip.src.subdivision_2_iso_code` <Type text='String' />
 
-Represents the ISO 3166-2 code for the second-level region associated with the IP address. When the actual value is not available, this field contains an empty string.
+The ISO 3166-2 code for the second-level region associated with the IP address. When the actual value is not available, this field contains an empty string.
 
 Example value:
 
 ```txt
-GB-SWK
+"GB-SWK"
 ```
 
 For more information on the ISO 3166-2 standard and the available regions, refer to [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) on Wikipedia.
@@ -423,7 +421,7 @@ This field has the same value as the `ip.geoip.subdivision_2_iso_code` field, wh
 
 ## `ip.src.is_in_european_union`
 
-`ip.src.is_in_european_union` `Boolean`
+`ip.src.is_in_european_union` <Type text='Boolean' />
 
 Returns `true` when the request originates from a country in the European Union (EU).
 
@@ -474,45 +472,73 @@ This field has the same value as the `ip.geoip.is_in_european_union` field, whic
 
 ## `raw.http.request.full_uri`
 
-`raw.http.request.full_uri` `String`
+`raw.http.request.full_uri` <Type text='String' />
 
-Similar to the [`http.request.full_uri`](#httprequestfull_uri) non-raw field. Represents the full URI as received by the web server without the URI fragment (if any) and without any transformation.
+The raw full URI as received by the web server without the URI fragment (if any) and without any transformation.
+
+<Render
+	file="raw-fields-definition-with-link"
+	params={{ fieldLink: "[`http.request.full_uri`](#httprequestfull_uri)" }}
+/>
 
 **Note:** This raw field may include some basic normalization done by Cloudflare's HTTP server. However, this can change in the future.
 
 ## `raw.http.request.uri`
 
-`raw.http.request.uri` `String`
+`raw.http.request.uri` <Type text='String' />
 
-Similar to the [`http.request.uri`](#httprequesturi) non-raw field. Represents the URI path and query string of the request without any transformation.
+The raw URI path and query string of the request without any transformation.
+
+<Render
+	file="raw-fields-definition-with-link"
+	params={{ fieldLink: "[`http.request.uri`](#httprequesturi)" }}
+/>
 
 **Note:** This raw field may include some basic normalization done by Cloudflare's HTTP server. However, this can change in the future.
 
 ## `raw.http.request.uri.path`
 
-`raw.http.request.uri.path` `String`
+`raw.http.request.uri.path` <Type text='String' />
 
-Similar to the [`http.request.uri.path`](#httprequesturipath) non-raw field. Represents the URI path of the request without any transformation.
+The raw URI path of the request without any transformation.
+
+<Render
+	file="raw-fields-definition-with-link"
+	params={{ fieldLink: "[`http.request.uri.path`](#httprequesturipath)" }}
+/>
 
 **Note:** This raw field may include some basic normalization done by Cloudflare's HTTP server. However, this can change in the future.
 
 ## `raw.http.request.uri.path.extension`
 
-`raw.http.request.uri.path.extension` `String`
+`raw.http.request.uri.path.extension` <Type text='String' />
 
-Similar to the [`http.request.uri.path.extension`](#httprequesturipathextension) non-raw field. Represents the file extension in the request URI path without any transformation.
+The raw file extension in the request URI path without any transformation.
+
+<Render
+	file="raw-fields-definition-with-link"
+	params={{
+		fieldLink:
+			"[`http.request.uri.path.extension`](#httprequesturipathextension)",
+	}}
+/>
 
 ## `raw.http.request.uri.query`
 
-`raw.http.request.uri.query` `String`
+`raw.http.request.uri.query` <Type text='String' />
 
-Similar to the [`http.request.uri.query`](#httprequesturiquery) non-raw field. Represents the entire query string without the `?` delimiter and without any transformation.
+The entire query string without the `?` delimiter and without any transformation.
+
+<Render
+	file="raw-fields-definition-with-link"
+	params={{ fieldLink: "[`http.request.uri.query`](#httprequesturiquery)" }}
+/>
 
 **Note:** This raw field may include some basic normalization done by Cloudflare's HTTP server. However, this can change in the future.
 
 ## `ssl`
 
-`ssl` `Boolean`
+`ssl` <Type text='Boolean' />
 
 Returns `true` when the HTTP connection to the client is encrypted.
 

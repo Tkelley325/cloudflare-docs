@@ -7,11 +7,12 @@ import {
 	notificationsSchema,
 	pagesBuildEnvironmentSchema,
 	pagesFrameworkPresetsSchema,
-	compatibilityDatesSchema,
+	compatibilityFlagsSchema,
 	glossarySchema,
 	learningPathsSchema,
 	videosSchema,
 	workersAiSchema,
+	changelogsNextSchema,
 } from "~/schemas";
 
 const partialSchema = z.object({
@@ -29,8 +30,8 @@ export const collections = {
 		schema: changelogsSchema,
 		type: "data",
 	}),
-	"compatibility-dates": defineCollection({
-		schema: compatibilityDatesSchema,
+	"compatibility-flags": defineCollection({
+		schema: compatibilityFlagsSchema,
 	}),
 	partials: defineCollection({
 		schema: partialSchema,
@@ -73,5 +74,8 @@ export const collections = {
 	apps: defineCollection({
 		schema: appsSchema,
 		type: "data",
+	}),
+	"changelogs-next": defineCollection({
+		schema: changelogsNextSchema,
 	}),
 };

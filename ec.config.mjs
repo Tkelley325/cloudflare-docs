@@ -1,11 +1,17 @@
+// @ts-check
 import darkTheme from "solarflare-theme/themes/cloudflare-dark-color-theme.json" with { type: "json" };
 import lightTheme from "solarflare-theme/themes/cloudflare-light-color-theme.json" with { type: "json" };
 
 import { definePlugin } from "@expressive-code/core";
 import { h } from "@expressive-code/core/hast";
 
+import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
+
 import lzstring from "lz-string";
 
+/**
+ * @param {string} code
+ */
 export function serialiseWorker(code) {
 	const formData = new FormData();
 
@@ -29,6 +35,9 @@ export function serialiseWorker(code) {
 	return formData;
 }
 
+/**
+ * @param {FormData} worker
+ */
 export async function compressWorker(worker) {
 	const serialisedWorker = new Response(worker);
 	return lzstring.compressToEncodedURIComponent(
@@ -92,7 +101,10 @@ function outputCodeblocks() {
 			},
 			postprocessRenderedBlock: async (context) => {
 				if (!context.codeBlock.meta.includes("output")) return;
-				context.renderData.blockAst.properties.className.push("code-output");
+				context.renderData.blockAst.properties.className ??= [];
+				if (Array.isArray(context.renderData.blockAst.properties.className)) {
+					context.renderData.blockAst.properties.className.push("code-output");
+				}
 				context.addStyles(`
 					div.expressive-code:has(figure.code-output) {
 						margin-top: 0 !important;
@@ -146,6 +158,7 @@ export default {
 		workersPlaygroundButton(),
 		outputCodeblocks(),
 		defaultLanguageTitles(),
+		pluginCollapsibleSections(),
 	],
 	themes: [darkTheme, lightTheme],
 	styleOverrides: {
